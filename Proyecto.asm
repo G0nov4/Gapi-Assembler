@@ -11,13 +11,12 @@ include extras.mac
 .data
 ; variables de menu
 	title_text db 'GAPI - Assembler v1 - Text Editor$'
-	msj  DB 0AH, 0DH, 	'  		Menu 		','$'
-	msj2  DB 0AH, 0DH, 	' 1.- Crear Archivo  ','$'
-	msj3 DB 0AH, 0DH, 	' 2.- Abrir Archivo','$'
-	msj4  DB 0AH, 0DH, 	' 3.- Modificar Archivo','$'
-	msj5  DB 0AH, 0DH, 	' 4.- Eliminar Archivo','$'
-	msj6  DB 0AH, 0DH, 	' 5.- Salir','$'
-	msj7 db 0ah,0dh,	' Selecionar Opcion:',10,13,'>> $'
+	msj2 DB 0AH, 0DH, 	'	1 Crear			3 Modificar			5 Eliminar','$'
+	msj3 DB 0AH, 0DH, 	'	2 Abrir			4 Eliminar			6 Salir','$'
+	msj db 0ah,0dh,	'Selecionar Opcion: $'
+	option_file db "Nombre del archivo: $"
+	texto db 100 dup('$')
+	opcion db 0
 ; variables de limpia Pantalla
 	color db 30h
 	lineas db 0
@@ -36,18 +35,64 @@ Inicio:
 	mov ax,@data
 	mov ds, ax
 ;=====================FUNCION PRINCIPAL====================
-	call Pinta_title
-	call Pinta_edit	
-	call Pinta_menu
-	jmp salir
+call Pinta_title
+call Pinta_edit
+call Pinta_menu
 
-	
+programa:
+	call Pinta_Select_option
+	mov ax,opcion
+	MOV  AH,0DH
+ 	INT  21H
+ 	MOV  AH,01H
+ 	INT  21H
+ 	CMP  AL,31H
+ 	JE  Crear
+ 	CMP  AL,32H
+ 	JE  Guardar
+ 	CMP  AL,33H
+ 	JE  Abrir
+ 	CMP  Al,34H
+ 	JE  Modificar
+ 	CMP  Al,35H
+ 	JE  Eliminar
+ 	CMP  Al,36H
+ 	JE  Salir
+ 	loop programa
 ;=====================FUNCIONES====================
 
-salir:	
+Crear:
+	mov ah,4ch
+	int 21h
+
+
+Guardar:
+	mov ah,4ch
+	int 21h
+	
+Abrir:  ; lectura
+	mov ah,4ch
+	int 21h
+
+Modificar:	;lectura y escritura
+	mov ah,4ch
+	int 21h
+	
+Eliminar:	
+	mov ah,4ch
+	int 21h
+Salir:	
 	mov ah,4ch
 	int 21h
 ;====================METODOS=====================
+Pinta_Select_option proc
+	mov fila,22
+	mov columna,10
+	call gotoxy
+	READ_STRING opcion
+	add opcion,30
+	Ret
+Pinta_Select_option endp
 Pinta_title proc
 	mov color,67h
 	mov fini,0
@@ -80,7 +125,7 @@ Pinta_menu proc
 	mov ffin,26
 	mov cfin,80
 	call clrscr
-	mov fila,0
+	mov fila,22
 	mov columna,0
 	call gotoxy
 	call Menu
@@ -88,13 +133,8 @@ Pinta_menu proc
 Pinta_menu endp
 
 Menu proc
-	PRINT_STRING msj
 	PRINT_STRING msj2
 	PRINT_STRING msj3
-	PRINT_STRING msj4
-	PRINT_STRING msj5
-	PRINT_STRING msj6
-	PRINT_STRING msj7
 	Ret
 Menu endp
 gotoxy proc

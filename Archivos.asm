@@ -38,6 +38,7 @@ ENDM
 	msj db 100 dup('$')
 	ln db 10,13
 	mensajeError db "[!] Error...$"
+	
 .code
 
 Inicio:
@@ -49,7 +50,8 @@ Inicio:
 	;mov ah,3ch ; 				Funcion de creador de archivos
 	;mov cx,0;					
 	;mov dx,offset filename;		filename = nombre del archivo
-	;int 21h			
+	;int 21h
+				
 	;jc lecturaError
 	;mov handle,ax
 
